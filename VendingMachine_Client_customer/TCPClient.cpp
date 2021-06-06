@@ -8,7 +8,7 @@
 #define BUFSIZE 512
 
 ////////////fucntion define///////////////
-//extern void print_test();
+extern void print_test();
 ////////////////////////////////////////
 
 // 소켓 함수 오류 출력후 종료 laptop
@@ -85,8 +85,8 @@ int main(int argc, char* argv[])
 
 	// 서버와 데이터 통신
 	while (1) {
-		//////////////////////////////////
-		extern print_test();
+		//////////////////////////////////fdsafsdaf
+		print_test();
 		//////////////////////////////////
 		// 데이터 입력
 		printf("\n[보낼 데이터] ");

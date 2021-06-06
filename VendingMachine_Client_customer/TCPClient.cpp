@@ -7,7 +7,7 @@
 #define SERVERPORT 9000
 #define BUFSIZE 512
 
-// 소켓 함수 오류 출력후 종료
+// 소켓 함수 오류 출력후 종료 laptop
 void err_quit(char* msg)
 {
 	LPVOID lpMsgBuf;

@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
 {
 	int retval;
 
-	// 윈속 초기화
+	// 윈속 초기화test
 	WSADATA wsa;
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
 		return 1;

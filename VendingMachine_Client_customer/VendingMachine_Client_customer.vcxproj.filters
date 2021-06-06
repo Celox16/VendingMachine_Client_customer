@@ -21,5 +21,8 @@
     <ClCompile Include="vendingMaachine_display.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="temp.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -7,8 +7,20 @@
 #define SERVERPORT 9000
 #define BUFSIZE 512
 
-////////////fucntion define///////////////
-extern void print_test();
+////////////variable define/////////////
+struct drinkInfo {
+	char name[10];
+	int price;
+	int count;
+};
+
+extern drinkInfo list[5];
+char drinkCount[5];
+////////////////////////////////////////
+
+///////////function define//////////////
+extern int PrintFirstMenu();
+extern void SetInitialArray(char vending[]);
 ////////////////////////////////////////
 
 // 소켓 함수 오류 출력후 종료 laptop
@@ -61,7 +73,7 @@ int main(int argc, char* argv[])
 {
 	int retval;
 
-	// 윈속 초기화test
+	// 윈속 초기화
 	WSADATA wsa;
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
 		return 1;
@@ -80,28 +92,37 @@ int main(int argc, char* argv[])
 	if (retval == SOCKET_ERROR) err_quit("connet()");
 
 	// 데이터 통신에 사용할 변수
-	char buf[BUFSIZE + 1];
+	int buf[BUFSIZE + 1];
 	int len;
+	int temp;
 
 	// 서버와 데이터 통신
 	while (1) {
-		//////////////////////////////////fdsafsdaf
-		print_test();
-		//////////////////////////////////
 		// 데이터 입력
 		printf("\n[보낼 데이터] ");
-		if (fgets(buf, BUFSIZE + 1, stdin) == NULL)
-			break;
+
+		//SetInitialArray(buf);
+		
+		//if (fgets(buf, BUFSIZE + 1, stdin) == NULL)
+		//	break;
+
+		buf[0] = 0;
+		buf[1] = 1;
+		buf[2] = 2;
+		buf[3] = '\0';
+		scanf("%d", &temp);
+
 
 		// 'n'문자 제거
-		len = strlen(buf);
-		if (buf[len - 1] == '\n')
-			buf[len - 1] = '\0';
-		if (strlen(buf) == 0)
-			break;
+		//len = strlen(buf);
+		//if (buf[len - 1] == '\n')
+		//	buf[len - 1] = '\0';
+		//if (strlen(buf) == 0)
+		//	break;
 
 		// 데이터 보내기
-		retval = send(sock, buf, strlen(buf), 0);
+		//retval = send(sock, (char*)&buf, strlen((char*)buf), 0);
+		retval = send(sock, (char*)&buf, 20, 0);
 		if (retval == SOCKET_ERROR) {
 			err_display("send()");
 			break;
@@ -109,7 +130,7 @@ int main(int argc, char* argv[])
 		printf("[TCP 클라이언트] %d바이트를 보냈습니다.\n", retval);
 
 		// 데이터 받기
-		retval = recvn(sock, buf, retval, 0);
+		retval = recvn(sock, (char*)&buf, retval, 0);
 		if (retval == SOCKET_ERROR) {
 			err_display("recv()");
 			break;
@@ -121,6 +142,7 @@ int main(int argc, char* argv[])
 		buf[retval] = '\0';
 		printf("[TCP 클라이언트] %d바이트를 받았습니다.\n", retval);
 		printf("[받은데이터] %s\n", buf);
+		printf("%d %d\n", buf[0], buf[1]);
 	}
 
 	//closesocket()

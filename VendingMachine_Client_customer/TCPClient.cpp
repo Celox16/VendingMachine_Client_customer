@@ -9,8 +9,13 @@
 
 ////////////variable define/////////////
 struct drinkInfo {
-	char name[10];
+	char name[20];
 	int price;
+	int count;
+};
+
+struct moneyInfo {
+	int value;
 	int count;
 };
 
@@ -20,7 +25,9 @@ char drinkCount[5];
 
 ///////////function define//////////////
 extern int PrintFirstMenu();
-extern void SetInitialArray(char vending[]);
+extern void SetInitialArray(int vending[]);
+extern void SetInitialStruct(drinkInfo buf_[]);
+extern void SetInitialMoney(moneyInfo money[]);
 ////////////////////////////////////////
 
 // 소켓 함수 오류 출력후 종료 laptop
@@ -94,26 +101,21 @@ int main(int argc, char* argv[])
 	// 데이터 통신에 사용할 변수
 	int buf[BUFSIZE + 1];
 	int len;
-	int temp;
+
+	///////////////////if array is struct array?//////////////////////
+	drinkInfo drink[BUFSIZE + 1];
+	moneyInfo money[BUFSIZE + 1];
+	//////////////////////////////////////////////////////////////////
 
 	// 서버와 데이터 통신
 	while (1) {
 		// 데이터 입력
 		printf("\n[보낼 데이터] ");
-
-		//SetInitialArray(buf);
 		
 		//if (fgets(buf, BUFSIZE + 1, stdin) == NULL)
 		//	break;
 
-		buf[0] = 0;
-		buf[1] = 1;
-		buf[2] = 2;
-		buf[3] = '\0';
-		scanf("%d", &temp);
-
-
-		// 'n'문자 제거
+		// '\n'문자 제거
 		//len = strlen(buf);
 		//if (buf[len - 1] == '\n')
 		//	buf[len - 1] = '\0';
@@ -122,15 +124,17 @@ int main(int argc, char* argv[])
 
 		// 데이터 보내기
 		//retval = send(sock, (char*)&buf, strlen((char*)buf), 0);
-		retval = send(sock, (char*)&buf, 20, 0);
+		retval = send(sock, (char*)&drink, BUFSIZE, 0);
 		if (retval == SOCKET_ERROR) {
 			err_display("send()");
 			break;
 		}
 		printf("[TCP 클라이언트] %d바이트를 보냈습니다.\n", retval);
 
+		//retval = send(sock, (char*)&money, BUFSIZE, 0);
+
 		// 데이터 받기
-		retval = recvn(sock, (char*)&buf, retval, 0);
+		retval = recvn(sock, (char*)&drink, retval, 0);
 		if (retval == SOCKET_ERROR) {
 			err_display("recv()");
 			break;
@@ -139,10 +143,30 @@ int main(int argc, char* argv[])
 			break;
 
 		// 받은 데이터 출력
-		buf[retval] = '\0';
+		//buf_[retval].name = '\0';
 		printf("[TCP 클라이언트] %d바이트를 받았습니다.\n", retval);
-		printf("[받은데이터] %s\n", buf);
-		printf("%d %d\n", buf[0], buf[1]);
+		//printf("[받은데이터] %s\n", buf);
+		printf("%d %d\n", drink[0].price, drink[1].price);
+
+
+		///////////////one more!!////////////////
+		SetInitialMoney(money);
+		printf("\n=============================\n");
+		retval = send(sock, (char*)&money, BUFSIZE, 0);
+		if (retval == SOCKET_ERROR) {
+			err_display("one more send");
+			break;
+		}
+
+		retval = recvn(sock, (char*)&money, retval, 0);
+		if (retval == SOCKET_ERROR) {
+			err_display("one more receive err");
+			break;
+		}
+		else if (retval == 0)
+			break;
+
+		printf("%d\n", money[0].value);
 	}
 
 	//closesocket()

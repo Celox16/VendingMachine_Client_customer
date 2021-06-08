@@ -3,11 +3,14 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define SERVERIP "127.0.0.1"
-#define SERVERPORT 9000
-#define BUFSIZE 512
+#define SERVERIP	"127.0.0.1"
+#define SERVERPORT	9000
+#define BUFSIZE		512
 
-////////////variable define/////////////테스트용
+#define DRINK_SIZE	5
+#define MONEY_SIZE	5
+
+// variable define
 struct drinkInfo {
 	char name[20];
 	int price;
@@ -19,16 +22,12 @@ struct moneyInfo {
 	int count;
 };
 
-extern drinkInfo list[5];
-char drinkCount[5];
-////////////////////////////////////////
+drinkInfo clientDrink[DRINK_SIZE];
+moneyInfo clientMoney[MONEY_SIZE];
 
-///////////function define//////////////
+// function define
+extern void SetInitial(drinkInfo initialDrink[], moneyInfo initalMoney[]);
 extern int PrintFirstMenu();
-extern void SetInitialArray(int vending[]);
-extern void SetInitialStruct(drinkInfo buf_[]);
-extern void SetInitialMoney(moneyInfo money[]);
-////////////////////////////////////////
 
 // 소켓 함수 오류 출력후 종료 laptop
 void err_quit(char* msg)
@@ -78,16 +77,17 @@ int recvn(SOCKET s, char* buf, int len, int flags)
 
 int main(int argc, char* argv[])
 {
-	int retval;
+	int retval; // drink retval
+	int selectFristMenu; // judgement customer or admin
 
 	// 윈속 초기화
 	WSADATA wsa;
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
 		return 1;
 
-	// socket()
+	// socket() - drink data
 	SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
-	if (sock == INVALID_SOCKET) err_quit("socket()");
+	if (sock == INVALID_SOCKET) err_quit("socket() - drink");
 
 	// connet()
 	SOCKADDR_IN serveraddr;
@@ -95,78 +95,69 @@ int main(int argc, char* argv[])
 	serveraddr.sin_family = AF_INET;
 	serveraddr.sin_addr.s_addr = inet_addr(SERVERIP);
 	serveraddr.sin_port = htons(SERVERPORT);
-	retval = connect(sock, (SOCKADDR*)&serveraddr, sizeof(serveraddr));
-	if (retval == SOCKET_ERROR) err_quit("connet()");
+	retval = connect(sock, (SOCKADDR*)&serveraddr, sizeof(serveraddr)); // drink connect
+	if (retval == SOCKET_ERROR) err_quit("connet() - drink");
+	if (retval == SOCKET_ERROR) err_quit("connect() - moeny");
 
 	// 데이터 통신에 사용할 변수
 	int buf[BUFSIZE + 1];
 	int len;
 
-	///////////////////if array is struct array?//////////////////////
-	drinkInfo drink[BUFSIZE + 1];
-	moneyInfo money[BUFSIZE + 1];
-	//////////////////////////////////////////////////////////////////
+	// set initial client data
+	SetInitial(clientDrink, clientMoney);
 
 	// 서버와 데이터 통신
 	while (1) {
 		// 데이터 입력
-		printf("\n[보낼 데이터] ");
+		//printf("\n[보낼 데이터] ");
 		
-		//if (fgets(buf, BUFSIZE + 1, stdin) == NULL)
-		//	break;
-
-		// '\n'문자 제거
-		//len = strlen(buf);
-		//if (buf[len - 1] == '\n')
-		//	buf[len - 1] = '\0';
-		//if (strlen(buf) == 0)
-		//	break;
-
-		// 데이터 보내기
-		//retval = send(sock, (char*)&buf, strlen((char*)buf), 0);
-		retval = send(sock, (char*)&drink, BUFSIZE, 0);
+		// send client inital drink data
+		retval = send(sock, (char*)&clientDrink, BUFSIZE, 0);
 		if (retval == SOCKET_ERROR) {
-			err_display("send()");
+			err_display("send drink data");
 			break;
 		}
-		printf("[TCP 클라이언트] %d바이트를 보냈습니다.\n", retval);
+		printf("send\n");
 
-		//retval = send(sock, (char*)&money, BUFSIZE, 0);
-
-		// 데이터 받기
-		retval = recvn(sock, (char*)&drink, retval, 0);
+		// receive server initial drink data
+		retval = recvn(sock, (char*)&clientDrink, BUFSIZE, 0);
 		if (retval == SOCKET_ERROR) {
-			err_display("recv()");
+			err_display("receive drink data");
 			break;
 		}
 		else if (retval == 0)
 			break;
+		printf("recv\n");
 
-		// 받은 데이터 출력
-		//buf_[retval].name = '\0';
-		printf("[TCP 클라이언트] %d바이트를 받았습니다.\n", retval);
-		//printf("[받은데이터] %s\n", buf);
-		printf("%d %d\n", drink[0].price, drink[1].price);
-
-
-		///////////////one more!!////////////////
-		SetInitialMoney(money);
-		printf("\n=============================\n");
-		retval = send(sock, (char*)&money, BUFSIZE, 0);
+		// send client initial money data
+		retval = send(sock, (char*)&clientMoney, BUFSIZE, 0);
 		if (retval == SOCKET_ERROR) {
-			err_display("one more send");
-			break;
-		}
-
-		retval = recvn(sock, (char*)&money, retval, 0);
-		if (retval == SOCKET_ERROR) {
-			err_display("one more receive err");
+			err_display("send money data");
 			break;
 		}
 		else if (retval == 0)
 			break;
+		printf("send2\n");
 
-		printf("%d\n", money[0].value);
+		// receive server intial money data
+		retval = recvn(sock, (char*)&clientMoney, BUFSIZE, 0);
+		if (retval == SOCKET_ERROR) {
+			err_display("receive money data");
+			break;
+		}
+		else if (retval == 0)
+			break;
+		printf("recv2");
+
+		// print menu
+		selectFristMenu = PrintFirstMenu();
+		if (selectFristMenu == 1) { // customer
+
+		}
+		else { // admin
+
+		}
+
 	}
 
 	//closesocket()

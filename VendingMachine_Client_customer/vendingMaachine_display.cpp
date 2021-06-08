@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <string.h>
 
-int coin[6] = { 0 };
+#define DRINK_SIZE	5
+#define MONEY_SIZE	5
 
 struct drinkInfo {
 	char name[20];
@@ -13,6 +14,9 @@ struct moneyInfo {
 	int value;
 	int count;
 };
+
+int moneyBuf[MONEY_SIZE];
+int drinkBuf[DRINK_SIZE];
 
 void SetInitial(drinkInfo initialDrink[], moneyInfo initialMoney[]) {
 	//water
@@ -56,7 +60,7 @@ void SetInitial(drinkInfo initialDrink[], moneyInfo initialMoney[]) {
 	initialMoney[4].count = 5;
 }
 
-// 사용자 전용인지 관리자 메뉴인지 확인하기
+// select customer menu or admin menu
 int PrintFirstMenu() {
 	int selectFirstMenu;
 	printf("===========================================================\n");
@@ -67,3 +71,37 @@ int PrintFirstMenu() {
 	return selectFirstMenu;
 }
 
+// customer menu : insert moeney
+int InsertCoin(moneyInfo clientMoney[]) {
+	int insertCoinCount[MONEY_SIZE];
+	int sumOfIsertedMoney = 0;
+	printf("===========================================================\n");
+	printf("동전을 투입해주세요");
+OVER:
+	for (int i = 0; i < MONEY_SIZE; i++) {
+		printf("%d원 투입 갯수 : ", clientMoney[i].value);
+		scanf("%d", &insertCoinCount[i]);
+		sumOfIsertedMoney += clientMoney[i].value * insertCoinCount[i];
+	}
+
+	if (sumOfIsertedMoney >= 5000) {
+		printf("투입한 돈이 너무 많습니다. 다시 투입해주세요.");
+		goto OVER;
+	}
+
+	for (int i = 0; i < MONEY_SIZE; i++) {
+		moneyBuf[i] = insertCoinCount[i];
+	}
+	printf("===========================================================\n\n");
+	return sumOfIsertedMoney;
+}
+
+// customer menu : select drink
+void SelectDrink(drinkInfo clientDrink[], int insertedMoney) {
+	printf("===========================================================\n");
+	for (int i = 0; i < DRINK_SIZE; i++) {
+		if (clientDrink[i].price <= insertedMoney) {
+			printf("%d. %s\t", clientDrink[i].name);
+		}
+	}
+}

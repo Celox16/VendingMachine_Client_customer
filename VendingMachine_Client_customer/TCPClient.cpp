@@ -7,7 +7,7 @@
 #define SERVERPORT 9000
 #define BUFSIZE 512
 
-////////////variable define/////////////
+////////////variable define/////////////테스트용
 struct drinkInfo {
 	char name[20];
 	int price;

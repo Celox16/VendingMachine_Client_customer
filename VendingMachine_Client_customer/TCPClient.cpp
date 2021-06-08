@@ -5,7 +5,7 @@
 
 #define SERVERIP	"127.0.0.1"
 #define SERVERPORT	9000
-#define BUFSIZE		512
+#define BUFSIZE		1024
 
 #define DRINK_SIZE	5
 #define MONEY_SIZE	5
@@ -28,6 +28,8 @@ moneyInfo clientMoney[MONEY_SIZE];
 // function define
 extern void SetInitial(drinkInfo initialDrink[], moneyInfo initalMoney[]);
 extern int PrintFirstMenu();
+extern int InsertCoin(moneyInfo clientMoney[]);
+extern void SelectDrink(drinkInfo clientDrink[], int insertedMoney);
 
 // 소켓 함수 오류 출력후 종료 laptop
 void err_quit(char* msg)
@@ -79,6 +81,7 @@ int main(int argc, char* argv[])
 {
 	int retval; // drink retval
 	int selectFristMenu; // judgement customer or admin
+	int insertedMoney; // sum of inserted money
 
 	// 윈속 초기화
 	WSADATA wsa;
@@ -87,7 +90,7 @@ int main(int argc, char* argv[])
 
 	// socket() - drink data
 	SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
-	if (sock == INVALID_SOCKET) err_quit("socket() - drink");
+	if (sock == INVALID_SOCKET) err_quit("socket()");
 
 	// connet()
 	SOCKADDR_IN serveraddr;
@@ -95,9 +98,8 @@ int main(int argc, char* argv[])
 	serveraddr.sin_family = AF_INET;
 	serveraddr.sin_addr.s_addr = inet_addr(SERVERIP);
 	serveraddr.sin_port = htons(SERVERPORT);
-	retval = connect(sock, (SOCKADDR*)&serveraddr, sizeof(serveraddr)); // drink connect
-	if (retval == SOCKET_ERROR) err_quit("connet() - drink");
-	if (retval == SOCKET_ERROR) err_quit("connect() - moeny");
+	retval = connect(sock, (SOCKADDR*)&serveraddr, sizeof(serveraddr));
+	if (retval == SOCKET_ERROR) err_quit("connet()");
 
 	// 데이터 통신에 사용할 변수
 	int buf[BUFSIZE + 1];
@@ -112,7 +114,7 @@ int main(int argc, char* argv[])
 		//printf("\n[보낼 데이터] ");
 		
 		// send client inital drink data
-		retval = send(sock, (char*)&clientDrink, BUFSIZE, 0);
+		retval = send(sock, (char*)clientDrink, BUFSIZE, 0);
 		if (retval == SOCKET_ERROR) {
 			err_display("send drink data");
 			break;
@@ -120,7 +122,7 @@ int main(int argc, char* argv[])
 		printf("send\n");
 
 		// receive server initial drink data
-		retval = recvn(sock, (char*)&clientDrink, BUFSIZE, 0);
+		retval = recvn(sock, (char*)clientDrink, BUFSIZE, 0);
 		if (retval == SOCKET_ERROR) {
 			err_display("receive drink data");
 			break;
@@ -129,8 +131,10 @@ int main(int argc, char* argv[])
 			break;
 		printf("recv\n");
 
+		printf("%s %d %d\n", clientDrink[0].name, clientDrink[0].price, clientDrink[0].count);
+
 		// send client initial money data
-		retval = send(sock, (char*)&clientMoney, BUFSIZE, 0);
+		retval = send(sock, (char*)clientMoney, BUFSIZE, 0);
 		if (retval == SOCKET_ERROR) {
 			err_display("send money data");
 			break;
@@ -139,19 +143,28 @@ int main(int argc, char* argv[])
 			break;
 		printf("send2\n");
 
+		printf("value = %d, count = %d\n", clientMoney[0].value, clientMoney[0].count);
+
 		// receive server intial money data
-		retval = recvn(sock, (char*)&clientMoney, BUFSIZE, 0);
+		retval = recvn(sock, (char*)clientMoney, BUFSIZE, 0);
 		if (retval == SOCKET_ERROR) {
 			err_display("receive money data");
 			break;
 		}
 		else if (retval == 0)
 			break;
-		printf("recv2");
+		printf("recv2\n");
+
+		printf("value = %d, count = %d\n", clientMoney[0].value, clientMoney[0].count);
+
+		// end to initial setting
+
+		// start vending machine client logic
 
 		// print menu
 		selectFristMenu = PrintFirstMenu();
 		if (selectFristMenu == 1) { // customer
+			insertedMoney = InsertCoin(clientMoney);
 
 		}
 		else { // admin

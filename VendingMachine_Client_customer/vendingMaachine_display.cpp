@@ -44,7 +44,7 @@ void SetInitial(drinkInfo initialDrink[], moneyInfo initialMoney[]) {
 	initialDrink[4].price = 750;
 	initialDrink[4].count = 3;
 
-	initialMoney[0].value = 1000;
+	initialMoney[0].value = 100000000;
 	initialMoney[0].count = 5;
 
 	initialMoney[1].value = 500;
@@ -63,6 +63,7 @@ void SetInitial(drinkInfo initialDrink[], moneyInfo initialMoney[]) {
 // select customer menu or admin menu
 int PrintFirstMenu() {
 	int selectFirstMenu;
+	printf("\n");
 	printf("===========================================================\n");
 	printf("========1. 자판기 이용하기(사용자 전용) 2. 관리자 메뉴========\n");
 	printf("===========================================================\n");
@@ -76,7 +77,7 @@ int InsertCoin(moneyInfo clientMoney[]) {
 	int insertCoinCount[MONEY_SIZE];
 	int sumOfIsertedMoney = 0;
 	printf("===========================================================\n");
-	printf("동전을 투입해주세요");
+	printf("동전을 투입해주세요\n");
 OVER:
 	for (int i = 0; i < MONEY_SIZE; i++) {
 		printf("%d원 투입 갯수 : ", clientMoney[i].value);
@@ -99,6 +100,7 @@ OVER:
 // customer menu : select drink
 void SelectDrink(drinkInfo clientDrink[], int insertedMoney) {
 	printf("===========================================================\n");
+	printf("구매하고자 하는 음료를 골라주세요\n");
 	for (int i = 0; i < DRINK_SIZE; i++) {
 		if (clientDrink[i].price <= insertedMoney) {
 			printf("%d. %s\t", clientDrink[i].name);

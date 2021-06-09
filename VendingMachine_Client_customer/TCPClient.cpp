@@ -29,9 +29,9 @@ moneyInfo clientMoney[MONEY_SIZE];
 extern void SetInitial(drinkInfo initialDrink[], moneyInfo initalMoney[]);
 extern int PrintFirstMenu();
 extern int InsertCoin(moneyInfo clientMoney[]);
-extern void SelectDrink(drinkInfo clientDrink[], int insertedMoney);
+extern int SelectDrink(drinkInfo clientDrink[], int insertedMoney, int* selectDrink);
 
-// 소켓 함수 오류 출력후 종료 laptop
+// 소켓 함수 오류 출력후 종료
 void err_quit(char* msg)
 {
 	LPVOID lpMsgBuf;
@@ -82,6 +82,8 @@ int main(int argc, char* argv[])
 	int retval; // drink retval
 	int selectFristMenu; // judgement customer or admin
 	int insertedMoney; // sum of inserted money
+	int changeMoney;	// after purchase chane money
+	int selectDrink;	// select drink
 
 	// 윈속 초기화
 	WSADATA wsa;
@@ -164,8 +166,9 @@ int main(int argc, char* argv[])
 		// print menu
 		selectFristMenu = PrintFirstMenu();
 		if (selectFristMenu == 1) { // customer
-			insertedMoney = InsertCoin(clientMoney);
-
+			insertedMoney = InsertCoin(clientMoney); // insert money
+			changeMoney = SelectDrink(clientDrink, insertedMoney, &selectDrink); // select drink and get change money
+			
 		}
 		else { // admin
 

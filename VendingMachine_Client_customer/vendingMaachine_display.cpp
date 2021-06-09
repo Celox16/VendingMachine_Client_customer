@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 
+// define size and struct
 #define DRINK_SIZE	5
 #define MONEY_SIZE	5
 
@@ -14,9 +15,6 @@ struct moneyInfo {
 	int value;
 	int count;
 };
-
-int moneyBuf[MONEY_SIZE];
-int drinkBuf[DRINK_SIZE];
 
 void SetInitial(drinkInfo initialDrink[], moneyInfo initialMoney[]) {
 	//water
@@ -78,32 +76,94 @@ int InsertCoin(moneyInfo clientMoney[]) {
 	int sumOfIsertedMoney = 0;
 	printf("===========================================================\n");
 	printf("동전을 투입해주세요\n");
-OVER:
+OVER_INSERT_MONEY:
 	for (int i = 0; i < MONEY_SIZE; i++) {
 		printf("%d원 투입 갯수 : ", clientMoney[i].value);
 		scanf("%d", &insertCoinCount[i]);
 		sumOfIsertedMoney += clientMoney[i].value * insertCoinCount[i];
+		printf("현재 투입 금액 : %d\n", sumOfIsertedMoney);
 	}
 
 	if (sumOfIsertedMoney >= 5000) {
 		printf("투입한 돈이 너무 많습니다. 다시 투입해주세요.");
-		goto OVER;
-	}
-
-	for (int i = 0; i < MONEY_SIZE; i++) {
-		moneyBuf[i] = insertCoinCount[i];
+		goto OVER_INSERT_MONEY;
 	}
 	printf("===========================================================\n\n");
+	
+	// inserted coin add to clientMoney
+	for (int i = 0; i < MONEY_SIZE; i++) {
+		clientMoney[i].count += insertCoinCount[i];
+	}
 	return sumOfIsertedMoney;
 }
 
 // customer menu : select drink
-void SelectDrink(drinkInfo clientDrink[], int insertedMoney) {
+int SelectDrink(drinkInfo clientDrink[], int insertedMoney, int* selectDrink) {
+	int drinkCount;
+	int changeMoney;
+
 	printf("===========================================================\n");
 	printf("구매하고자 하는 음료를 골라주세요\n");
 	for (int i = 0; i < DRINK_SIZE; i++) {
-		if (clientDrink[i].price <= insertedMoney) {
-			printf("%d. %s\t", clientDrink[i].name);
+		if (clientDrink[i].price <= insertedMoney && clientDrink[i].count>0 ) {
+			printf("%d. %s\t", i, clientDrink[i].name);
 		}
 	}
+	printf("\n");
+
+	// select drink
+	scanf("%d", selectDrink);
+
+	printf("개수를 선택하세요 :");
+DRINK_COUNT_OVER:
+	scanf("%d", &drinkCount);
+
+	if (clientDrink[*selectDrink].price * drinkCount > insertedMoney) {
+		printf("금액이 부족합니다. 개수를 다시 입력해주세요(입력된 금액 %d원) : ", insertedMoney);
+		goto DRINK_COUNT_OVER;
+	}
+	else if (clientDrink[*selectDrink].count < drinkCount) {
+		printf("음료 개수가 부족합니다. (남은재고 : %d개) 개수를 다시 입력해주세요 : ", clientDrink[*selectDrink].count);
+		goto DRINK_COUNT_OVER;
+	}
+	else {
+		changeMoney = insertedMoney - clientDrink[*selectDrink].price * drinkCount;
+	}
+
+	return changeMoney;
+}
+
+// customer menu : get change money and modify clientMoney, clientDrink
+int GetChangeAndModifyList(moneyInfo clientMoney[], drinkInfo clientDrink[], int changeMoney, int selectDrink) {
+	int changeMoneyCountBuf[MONEY_SIZE] = { 0 }; // separately change coin count
+
+	for (int i = 0; i < MONEY_SIZE; i++) {
+		if (changeMoney == 0)
+			break;
+		else if (clientMoney[i].count == 0)
+			continue;
+		else if (changeMoney >= clientMoney[i].value) {
+			do {
+				changeMoney -= clientMoney[i].value;
+				changeMoneyCountBuf[i]++;
+			} while (changeMoney >= clientMoney[i].value);
+		}
+	}
+
+	if (changeMoney != 0) {
+		printf("잔돈이 부족합니다.\n");
+		//RefundDrinkAndMoney();
+	}
+	else {
+		printf("%s 구매완료!\n", clientDrink[selectDrink].name);
+		for (int i = 0; i < MONEY_SIZE; i++) {
+			
+		}
+	}
+
+	return 1;
+}
+
+void RefundDrinkAndMoney() {
+
 }

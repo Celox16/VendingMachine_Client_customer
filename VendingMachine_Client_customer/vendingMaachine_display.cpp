@@ -48,7 +48,7 @@ void SetInitial(drinkInfo initialDrink[], moneyInfo initialMoney[]) {
 	initialDrink[4].price = 750;
 	initialDrink[4].count = 3;
 
-	initialMoney[0].value = 100000000;
+	initialMoney[0].value = 1000;
 	initialMoney[0].count = 5;
 
 	initialMoney[1].value = 500;

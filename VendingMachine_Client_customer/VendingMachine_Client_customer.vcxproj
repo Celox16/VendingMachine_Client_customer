@@ -140,7 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="TCPClient.cpp" />
-    <ClCompile Include="temp.cpp" />
+    <ClCompile Include="vendingMachine_admin.cpp" />
     <ClCompile Include="vendingMaachine_display.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

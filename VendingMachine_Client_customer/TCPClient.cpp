@@ -120,102 +120,54 @@ int main(int argc, char* argv[])
 
 	// 서버와 데이터 통신
 	while (1) {
-		// 데이터 입력
-		//printf("\n[보낼 데이터] ");
-		
-		// send client inital drink data
-		retval = send(sock, (char*)clientDrink, BUFSIZE, 0);
-		if (retval == SOCKET_ERROR) {
-			err_display("send drink data");
-			break;
-		}
-		printf("send\n");
-
-		// receive server initial drink data
-		retval = recvn(sock, (char*)clientDrink, BUFSIZE, 0);
-		if (retval == SOCKET_ERROR) {
-			err_display("receive drink data");
-			break;
-		}
-		else if (retval == 0)
-			break;
-		printf("recv\n");
-
-		printf("%s %d %d\n", clientDrink[0].name, clientDrink[0].price, clientDrink[0].count);
-
-		// send client initial money data
-		retval = send(sock, (char*)clientMoney, BUFSIZE, 0);
-		if (retval == SOCKET_ERROR) {
-			err_display("send money data");
-			break;
-		}
-		else if (retval == 0)
-			break;
-		printf("send2\n");
-
-		printf("value = %d, count = %d\n", clientMoney[0].value, clientMoney[0].count);
-
-		// receive server intial money data
-		retval = recvn(sock, (char*)clientMoney, BUFSIZE, 0);
-		if (retval == SOCKET_ERROR) {
-			err_display("receive money data");
-			break;
-		}
-		else if (retval == 0)
-			break;
-		printf("recv2\n");
-
-		printf("value = %d, count = %d\n", clientMoney[0].value, clientMoney[0].count);
-
-		// end to initial setting
-
-		// start vending machine client logic
-
 		// print menu
 		selectFristMenu = PrintFirstMenu();
 		if (selectFristMenu == 1) { // customer
+			// send client inital drink data
+			retval = send(sock, (char*)&clientDrink, BUFSIZE, 0);
+			if (retval == SOCKET_ERROR) {
+				err_display("send drink data");
+				break;
+			}
+			printf("send\n");
+
+			// receive server initial drink data
+			retval = recvn(sock, (char*)&clientDrink, BUFSIZE, 0);
+			if (retval == SOCKET_ERROR) {
+				err_display("receive drink data");
+				break;
+			}
+			else if (retval == 0)
+				break;
+			printf("recv\n");
+
+			// send client initial money data
+			retval = send(sock, (char*)&clientMoney, BUFSIZE, 0);
+			if (retval == SOCKET_ERROR) {
+				err_display("send money data");
+				break;
+			}
+			else if (retval == 0)
+				break;
+			printf("send2\n");
+
+			// receive server intial money data
+			retval = recvn(sock, (char*)&clientMoney, BUFSIZE, 0);
+			if (retval == SOCKET_ERROR) {
+				err_display("receive money data");
+				break;
+			}
+			else if (retval == 0)
+				break;
+			printf("recv2\n");
+
+			// client logic
 			insertedMoney = InsertCoin(clientMoney); // insert money
 			buf = SelectDrink(clientDrink, insertedMoney); // select drink and get change money
 			GetChangeAndModifyList(clientMoney, clientDrink, buf); // get change and modify money, drink array
 		}
 		else if (selectFristMenu == 2) {
-			//////////////////////
-			// send modified clientDrink data
-			retval = send(sock, (char*)clientDrink, BUFSIZE, 0);
-			if (retval == SOCKET_ERROR) {
-				err_display("send drink data");
-				break;
-			}
-			printf("after client logic send\n");
 
-			// recevie modified clientDrink data
-			retval = recvn(sock, (char*)clientDrink, BUFSIZE, 0);
-			if (retval == SOCKET_ERROR) {
-				err_display("receive drink data");
-				break;
-			}
-			else if (retval == 0)
-				break;
-			printf("after client logic recv\n");
-
-			// send modified clientMoney data
-			retval = send(sock, (char*)clientMoney, BUFSIZE, 0);
-			if (retval == SOCKET_ERROR) {
-				err_display("send drink data");
-				break;
-			}
-			printf("after client logic send2\n");
-
-			// recevie modified clientMoney data
-			retval = recvn(sock, (char*)clientMoney, BUFSIZE, 0);
-			if (retval == SOCKET_ERROR) {
-				err_display("receive drink data");
-				break;
-			}
-			else if (retval == 0)
-				break;
-			printf("after client logic recv2\n");
-			//////////////////////
 			break;
 		}
 		else { // admin
@@ -227,7 +179,7 @@ int main(int argc, char* argv[])
 		// re send drink and money list
 
 		// send modified clientDrink data
-		retval = send(sock, (char*)clientDrink, BUFSIZE, 0);
+		retval = send(sock, (char*)&clientDrink, BUFSIZE, 0);
 		if (retval == SOCKET_ERROR) {
 			err_display("send drink data");
 			break;
@@ -235,7 +187,7 @@ int main(int argc, char* argv[])
 		printf("after client logic send\n");
 
 		// recevie modified clientDrink data
-		retval = recvn(sock, (char*)clientDrink, BUFSIZE, 0);
+		retval = recvn(sock, (char*)&clientDrink, BUFSIZE, 0);
 		if (retval == SOCKET_ERROR) {
 			err_display("receive drink data");
 			break;
@@ -245,7 +197,7 @@ int main(int argc, char* argv[])
 		printf("after client logic recv\n");
 
 		// send modified clientMoney data
-		retval = send(sock, (char*)clientMoney, BUFSIZE, 0);
+		retval = send(sock, (char*)&clientMoney, BUFSIZE, 0);
 		if (retval == SOCKET_ERROR) {
 			err_display("send drink data");
 			break;
@@ -253,7 +205,7 @@ int main(int argc, char* argv[])
 		printf("after client logic send2\n");
 
 		// recevie modified clientMoney data
-		retval = recvn(sock, (char*)clientMoney, BUFSIZE, 0);
+		retval = recvn(sock, (char*)&clientMoney, BUFSIZE, 0);
 		if (retval == SOCKET_ERROR) {
 			err_display("receive drink data");
 			break;

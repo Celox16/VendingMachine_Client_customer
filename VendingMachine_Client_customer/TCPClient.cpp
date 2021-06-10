@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define SERVERIP	"127.0.0.1"
+#define SERVERIP	"172.30.1.12"
 #define SERVERPORT	9000
 #define BUFSIZE		1024
 

@@ -10,7 +10,7 @@
 #define DRINK_SIZE	5
 #define MONEY_SIZE	5
 
-// variable define
+// struct define
 struct drinkInfo {
 	char name[20];
 	int price;
@@ -22,7 +22,7 @@ struct moneyInfo {
 	int count;
 };
 
-struct returnValue {
+struct valuesForCustomer {
 	int selctDrink;
 	int drinkCount;
 	int changeMoney;
@@ -35,8 +35,8 @@ moneyInfo clientMoney[MONEY_SIZE];
 extern void SetInitial(drinkInfo initialDrink[], moneyInfo initalMoney[]);
 extern int PrintFirstMenu();
 extern int InsertCoin(moneyInfo clientMoney[]);
-extern returnValue SelectDrink(drinkInfo clientDrink[], int insertedMoney);
-extern void GetChangeAndModifyList(moneyInfo clientMoney[], drinkInfo clientDrink[], returnValue buf);
+extern valuesForCustomer SelectDrink(drinkInfo clientDrink[], int insertedMoney);
+extern void GetChangeAndModifyList(moneyInfo clientMoney[], drinkInfo clientDrink[], valuesForCustomer buf);
 
 // 소켓 함수 오류 출력후 종료
 void err_quit(char* msg)
@@ -91,7 +91,7 @@ int main(int argc, char* argv[])
 	int insertedMoney; // sum of inserted money
 	int changeMoney;	// after purchase chane money
 	int selectDrink;	// select drink
-	returnValue buf;	// return values
+	valuesForCustomer customerValue;	// return values
 
 	// 윈속 초기화
 	WSADATA wsa;
@@ -163,15 +163,55 @@ int main(int argc, char* argv[])
 
 			// client logic
 			insertedMoney = InsertCoin(clientMoney); // insert money
-			buf = SelectDrink(clientDrink, insertedMoney); // select drink and get change money
-			GetChangeAndModifyList(clientMoney, clientDrink, buf); // get change and modify money, drink array
+			customerValue = SelectDrink(clientDrink, insertedMoney); // select drink and get change money
+			GetChangeAndModifyList(clientMoney, clientDrink, customerValue); // get change and modify money, drink array
 		}
-		else if (selectFristMenu == 2) {
+		else if (selectFristMenu == 2) { // admin
+			// send client inital drink data
+			retval = send(sock, (char*)clientDrink, sizeof(drinkInfo), 0);
+			if (retval == SOCKET_ERROR) {
+				err_display("send drink data");
+				break;
+			}
+			printf("send\n");
 
+			// receive server initial drink data
+			retval = recvn(sock, (char*)clientDrink, sizeof(drinkInfo), 0);
+			if (retval == SOCKET_ERROR) {
+				err_display("receive drink data");
+				break;
+			}
+			else if (retval == 0)
+				break;
+			printf("recv\n");
+
+			// send client initial money data
+			retval = send(sock, (char*)clientMoney, sizeof(moneyInfo), 0);
+			if (retval == SOCKET_ERROR) {
+				err_display("send money data");
+				break;
+			}
+			else if (retval == 0)
+				break;
+			printf("send2\n");
+
+			// receive server intial money data
+			retval = recvn(sock, (char*)clientMoney, sizeof(moneyInfo), 0);
+			if (retval == SOCKET_ERROR) {
+				err_display("receive money data");
+				break;
+			}
+			else if (retval == 0)
+				break;
+			printf("recv2\n");
+
+			// start to admin logic
+			printf("비밀번호 입력 : ");
+
+
+		}
+		else { // exit
 			break;
-		}
-		else { // admin
-
 		}
 
 		// end to clinet logic

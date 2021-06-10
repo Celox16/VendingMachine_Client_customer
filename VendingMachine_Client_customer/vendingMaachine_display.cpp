@@ -16,7 +16,7 @@ struct moneyInfo {
 	int count;
 };
 
-struct returnValue {
+struct valuesForCustomer {
 	int selectDrink;
 	int drinkCount;
 	int changeMoney;
@@ -104,20 +104,21 @@ OVER_INSERT_MONEY:
 }
 
 // customer menu : select drink
-returnValue SelectDrink(drinkInfo clientDrink[], int insertedMoney) {
-	returnValue buf;
+valuesForCustomer SelectDrink(drinkInfo clientDrink[], int insertedMoney) {
+	valuesForCustomer buf;
 
 	printf("===========================================================\n");
-	printf("구매하고자 하는 음료를 골라주세요\n");
+	printf("구매하고자 하는 음료를 골라주세요(가격, 남은 수량)\n");
 	for (int i = 0; i < DRINK_SIZE; i++) {
-		if (clientDrink[i].price <= insertedMoney && clientDrink[i].count>0 ) {
-			printf("%d. %s\t", i, clientDrink[i].name);
+		if (i%3==0) {
+			printf("\n");
 		}
+		printf("%d. %s(%d, %d)\t ", i, clientDrink[i].name, clientDrink[i].price, clientDrink[i].count);
 	}
-	printf("\n");
-
 	// select drink
+	printf("\n입력 : ");
 	scanf("%d", &buf.selectDrink);
+	printf("===========================================================\n");
 
 	printf("개수를 선택하세요 :");
 DRINK_COUNT_OVER:
@@ -139,7 +140,7 @@ DRINK_COUNT_OVER:
 }
 
 // customer menu : get change money and modify clientMoney, clientDrink
-void GetChangeAndModifyList(moneyInfo clientMoney[], drinkInfo clientDrink[], returnValue buf) {
+void GetChangeAndModifyList(moneyInfo clientMoney[], drinkInfo clientDrink[], valuesForCustomer buf) {
 	int changeMoneyCountBuf[MONEY_SIZE] = { 0 }; // separately change coin count
 
 	for (int i = 0; i < MONEY_SIZE; i++) {

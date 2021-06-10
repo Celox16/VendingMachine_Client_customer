@@ -30,13 +30,24 @@ struct valuesForCustomer {
 
 drinkInfo clientDrink[DRINK_SIZE];
 moneyInfo clientMoney[MONEY_SIZE];
+char originPassword[BUFSIZE + 1] = "adminadmin!";
+char enteredPassword[BUFSIZE + 1];
 
-// function define
+// function define - customer menu
 extern void SetInitial(drinkInfo initialDrink[], moneyInfo initalMoney[]);
 extern int PrintFirstMenu();
 extern int InsertCoin(moneyInfo clientMoney[]);
 extern valuesForCustomer SelectDrink(drinkInfo clientDrink[], int insertedMoney);
 extern void GetChangeAndModifyList(moneyInfo clientMoney[], drinkInfo clientDrink[], valuesForCustomer buf);
+
+// function define - admin menu
+extern int ComparePassword(char originPassword[], char enteredPassword[]);
+extern int PrintAdminMenu();
+extern void RechargeDrink(drinkInfo clientDrink[]);
+extern void RechargeMoney(moneyInfo clientMoney[]);
+extern void CollectMoney(moneyInfo clientMoney[]);
+extern void ModifyDrinkInfo(drinkInfo clientDrink[]);
+extern void ModifyPassword(char originPassword[BUFSIZE + 1]);
 
 // 소켓 함수 오류 출력후 종료
 void err_quit(char* msg)
@@ -88,6 +99,7 @@ int main(int argc, char* argv[])
 {
 	int retval; // drink retval
 	int selectFristMenu; // judgement customer or admin
+	int selectAdminMenu; // to select in admin menu
 	int insertedMoney; // sum of inserted money
 	int changeMoney;	// after purchase chane money
 	int selectDrink;	// select drink
@@ -206,9 +218,41 @@ int main(int argc, char* argv[])
 			printf("recv2\n");
 
 			// start to admin logic
+			// enter admin password
 			printf("비밀번호 입력 : ");
-
-
+			fflush(stdin);
+			rewind(stdin);
+			fgets(enteredPassword, BUFSIZE + 1, stdin);
+			len = strlen(enteredPassword);
+			if (enteredPassword[len - 1] == '\n') enteredPassword[len - 1] = '\0';
+			if (!ComparePassword(originPassword, enteredPassword)) {
+				selectAdminMenu = PrintAdminMenu();
+				switch (selectAdminMenu)
+				{
+				case 1:
+					RechargeDrink(clientDrink);
+					break;
+				case 2:
+					RechargeMoney(clientMoney);
+					break;
+				case 3:
+					CollectMoney(clientMoney);
+					break;
+				case 4:
+					ModifyDrinkInfo(clientDrink);
+					break;
+				case 5:
+					ModifyPassword(originPassword);
+					break;
+				case 6:
+					break;
+				default:
+					break;
+				}
+			}
+			else {
+				printf("비밀번호가 일치하지 않습니다. ");
+			}
 		}
 		else { // exit
 			break;
@@ -216,7 +260,7 @@ int main(int argc, char* argv[])
 
 		// end to clinet logic
 
-		// re send drink and money list
+		// resend drink and money list
 
 		// send modified clientDrink data
 		retval = send(sock, (char*)&clientDrink, sizeof(drinkInfo), 0);
@@ -226,7 +270,7 @@ int main(int argc, char* argv[])
 		}
 		printf("after client logic send\n");
 
-		// recevie modified clientDrink data
+		// receive modified clientDrink data
 		retval = recvn(sock, (char*)&clientDrink, sizeof(drinkInfo), 0);
 		if (retval == SOCKET_ERROR) {
 			err_display("receive drink data");

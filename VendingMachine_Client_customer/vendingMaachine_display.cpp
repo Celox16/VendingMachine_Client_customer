@@ -69,9 +69,9 @@ int PrintFirstMenu() {
 	int selectFirstMenu;
 	printf("\n");
 	printf("===========================================================\n");
-	printf("========1. 자판기 이용하기(사용자 전용) 2. 관리자 메뉴========\n");
+	printf("==========1. 자판기사용\t2. 관리자메뉴\t3. 종료============\n");
 	printf("===========================================================\n");
-
+	printf("메뉴를 선택해주세요 : ");
 	scanf("%d", &selectFirstMenu);
 	return selectFirstMenu;
 }
@@ -113,11 +113,13 @@ valuesForCustomer SelectDrink(drinkInfo clientDrink[], int insertedMoney) {
 		if (i%3==0) {
 			printf("\n");
 		}
-		printf("%d. %s(%d, %d)\t ", i, clientDrink[i].name, clientDrink[i].price, clientDrink[i].count);
+		printf("%d. %s(%d, %d)\t ", i+1, clientDrink[i].name, clientDrink[i].price, clientDrink[i].count);
 	}
+
 	// select drink
 	printf("\n입력 : ");
 	scanf("%d", &buf.selectDrink);
+	buf.selectDrink--;
 	printf("===========================================================\n");
 
 	printf("개수를 선택하세요 :");
@@ -158,7 +160,6 @@ void GetChangeAndModifyList(moneyInfo clientMoney[], drinkInfo clientDrink[], va
 
 	if (buf.changeMoney != 0) {
 		printf("잔돈이 부족합니다.\n");
-		//RefundDrinkAndMoney();
 	}
 	else {
 		printf("%s %d개 구매완료!\n", clientDrink[buf.selectDrink].name, buf.drinkCount);
@@ -169,8 +170,5 @@ void GetChangeAndModifyList(moneyInfo clientMoney[], drinkInfo clientDrink[], va
 		}
 		printf("반환 완료\n");
 	}
-}
-
-void RefundDrinkAndMoney() {
-
+	printf("===========================================================\n\n\n");
 }

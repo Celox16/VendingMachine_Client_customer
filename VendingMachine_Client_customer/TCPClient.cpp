@@ -97,11 +97,11 @@ int recvn(SOCKET s, char* buf, int len, int flags)
 
 int main(int argc, char* argv[])
 {
-	int retval; // drink retval
+	int retval; // retval
 	int selectFristMenu; // judgement customer or admin
 	int selectAdminMenu; // to select in admin menu
 	int insertedMoney; // sum of inserted money
-	int changeMoney;	// after purchase chane money
+	int changeMoney;	// after purchase change money
 	int selectDrink;	// select drink
 	valuesForCustomer customerValue;	// return values
 
@@ -124,7 +124,6 @@ int main(int argc, char* argv[])
 	if (retval == SOCKET_ERROR) err_quit("connet()");
 
 	// 데이터 통신에 사용할 변수
-	//int buf[BUFSIZE + 1];
 	int len;
 
 	// set initial client data

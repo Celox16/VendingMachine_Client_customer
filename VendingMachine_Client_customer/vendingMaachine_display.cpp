@@ -92,6 +92,7 @@ OVER_INSERT_MONEY:
 
 	if (sumOfIsertedMoney > 5000) {
 		printf("투입한 돈이 너무 많습니다. 다시 투입해주세요.");
+		sumOfIsertedMoney = 0;
 		goto OVER_INSERT_MONEY;
 	}
 	printf("===========================================================\n\n");

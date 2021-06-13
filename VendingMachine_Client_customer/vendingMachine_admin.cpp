@@ -31,7 +31,7 @@ int PrintAdminMenu() {
 	printf("\n");
 	printf("===========================================================\n");
 	printf("1. 음료재고 충전,\t2. 거스름돈 충전\t3. 수금\n");
-	printf("4. 음료이름 변경,\t5. 비밀번호 변경\t6. 매출현황\n");
+	printf("4. 음료정보 변경,\t5. 비밀번호 변경\t6. 매출현황\n");
 	printf("===========================================================\n");
 
 	scanf("%d", &selectAdminMenu);
@@ -62,7 +62,7 @@ void RechargeDrink(drinkInfo clientDrink[]) {
 
 	//modify (add to drink count in client drink)
 	clientDrink[selectDrink].count += rechargeDrinkCount;
-	printf("%s(%d개 충전, 총%d개\n", clientDrink[selectDrink].name, rechargeDrinkCount, clientDrink[selectDrink].count);
+	printf("%s(%d개 충전, 총%d개)\n", clientDrink[selectDrink].name, rechargeDrinkCount, clientDrink[selectDrink].count);
 
 }
 
@@ -93,7 +93,7 @@ void RechargeMoney(moneyInfo clientMoney[]) {
 // collect money (sub coin)
 void CollectMoney(moneyInfo clientMoney[]) {
 	int collectMoneyCount[MONEY_SIZE];
-	int sumCollectedMoney;
+	int sumCollectedMoney = 0;
 
 	printf("======================화폐 재고 리스트======================\n");
 	printf("수금할 화폐의 개수를 입력해주세요\n");
@@ -119,19 +119,19 @@ void CollectMoney(moneyInfo clientMoney[]) {
 void ModifyDrinkInfo(drinkInfo clientDrink[]) {
 	int selectModify;
 	char drinkName[BUFSIZE + 1];
-	int len;
-	int modifyDrinkPrice;
+	int len = 0;
+	int modifyDrinkPrice = 0;
 
 	printf("======================음료 정보 리스트======================\n");
 	for (int i = 0; i < DRINK_SIZE; i++) {
-		printf("%d. 음료 이름 : %s, 음료 가격 : %d\n", clientDrink[i].name, clientDrink[i].price);
+		printf("음료 이름 : %s, 음료 가격 : %d\n", clientDrink[i].name, clientDrink[i].price);
 	}
 	printf("===========================================================\n");
 
-	printf("1. 음료 이름 수정 2. 음료 가격 수정");
-
 	printf("수정할 음료의 이름을 입력해주세요 : ");
 
+	fflush(stdin);
+	rewind(stdin);
 	// edit the entered name
 	fgets(drinkName, BUFSIZE + 1, stdin);
 	len = strlen(drinkName);
@@ -140,11 +140,13 @@ void ModifyDrinkInfo(drinkInfo clientDrink[]) {
 	// search drink
 	for (int i = 0; i < MONEY_SIZE; i++) {
 		if (!strcmp(clientDrink[i].name, drinkName)) {
-			printf("음료이름 : %s, 가격 : %d\n1. 음료이름 수정, 2. 음료가격 수정 : ");
+			printf("음료이름 : %s, 가격 : %d\n1. 음료이름 수정, 2. 음료가격 수정 : ", clientDrink[i].name, clientDrink[i].price);
 			scanf("%d", &selectModify);
 			if (selectModify == 1) {
 				printf("수정할 음료의 이름을 정해주세요 : ");
 
+				fflush(stdin);
+				rewind(stdin);
 				// edit the entered name
 				fgets(drinkName, BUFSIZE + 1, stdin);
 				len = strlen(drinkName);
